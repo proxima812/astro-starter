@@ -1,6 +1,6 @@
 # Astro Starter Latest
 
-[![Built with Astro](https://astro.badg.es/v2/built-with-astro/medium.svg)](https://astro.build)
+[![Built with Astro](https://astro.badg.es/v2/built-with-astro/tiny.svg)](https://astro.build)
 ![Astro](https://img.shields.io/badge/Astro-6.1-black?logo=astro&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
