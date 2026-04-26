@@ -1,0 +1,155 @@
+# =========================
+# BUILD OUTPUT
+# =========================
+dist/
+build/
+out/
+.output/
+.vercel/
+.netlify/
+
+# =========================
+# ASTRO
+# =========================
+.astro/
+
+# =========================
+# DEPENDENCIES
+# =========================
+node_modules/
+.pnp/
+.pnp.js
+
+# =========================
+# LOGS
+# =========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# ENV (CRITICAL)
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# IDE / EDITORS
+# =========================
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.sw?
+
+# =========================
+# TYPESCRIPT
+# =========================
+*.tsbuildinfo
+
+# =========================
+# TESTS
+# =========================
+coverage/
+.nyc_output/
+
+# =========================
+# CACHE
+# =========================
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.svelte-kit/
+.eslintcache
+
+# =========================
+# LOCK FILES (решай сам)
+# =========================
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# =========================
+# DATABASE
+# =========================
+*.sqlite
+*.db
+
+# =========================
+# SECRETS
+# =========================
+*.pem
+*.key
+*.crt
+*.p12
+
+# =========================
+# UPLOADS
+# =========================
+uploads/
+public/uploads/
+
+# =========================
+# TEMP
+# =========================
+*.tmp
+*.temp
+*.bak
+
+# =========================
+# =========================
+# AI AGENTS / LLM TOOLS
+# =========================
+# =========================
+
+# Claude
+.claude/
+.claudeignore
+CLAUDE.md
+
+# OpenAI Codex
+.codex/
+.codexignore
+
+# Cursor
+.cursor/
+.cursorrules
+
+# Windsurf / Codeium
+.windsurf/
+.windsurfrules
+
+# Gemini
+.gemini/
+
+# General agents
+.agent/
+.agents/
+.ai/
+.aiignore
+.llmignore
+
+# Other tools
+.kiro/
+.goose/
+.opencode/
+.trae/
+
+# Generated agent skills
+.*/skills/
+
+# Copilot configs (опционально)
+.github/copilot-instructions.md
+skills-lock.json

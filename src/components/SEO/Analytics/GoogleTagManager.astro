@@ -1,0 +1,131 @@
+---
+export type ConsentDefaults = {
+  ad_storage?: 'granted' | 'denied';
+  analytics_storage?: 'granted' | 'denied';
+  ad_user_data?: 'granted' | 'denied';
+  ad_personalization?: 'granted' | 'denied';
+  functionality_storage?: 'granted' | 'denied';
+  personalization_storage?: 'granted' | 'denied';
+  security_storage?: 'granted' | 'denied';
+};
+
+export interface Props {
+  /**
+   * Google Tag Manager container ID (required)
+   * @example 'GTM-XXXXXXX'
+   */
+  gtmId: string;
+
+  /**
+   * Object that contains all of the information
+   * that you want to pass to Google Tag Manager.
+   */
+  dataLayer?: Record<string, unknown>;
+
+  /**
+   * Custom name for dataLayer object.
+   */
+  dataLayerName?: string;
+
+  /**
+   * Whether to include the noscript iframe
+   * @default true
+   */
+  includeNoScript?: boolean;
+
+  /**
+   * Whether to enable Google Tag Manager in development mode
+   * @default false
+   */
+  enableInDevMode?: boolean;
+
+  /**
+   * Set preview auth for GTM workspace previews
+   * @example 'WFcf6HDw'
+   */
+  auth?: string;
+
+  /**
+   * Set preview environment ID for GTM workspace previews
+   * @example 'env-1'
+   */
+  preview?: string;
+
+  /**
+   * Default consent state for Google Consent Mode v2
+   * Set consent defaults before GTM initializes for GDPR compliance
+   * @see https://developers.google.com/tag-platform/security/guides/consent
+   */
+  defaultConsent?: ConsentDefaults;
+}
+
+const {
+  gtmId,
+  dataLayer = {},
+  dataLayerName = "dataLayer",
+  includeNoScript = true,
+  enableInDevMode = false,
+  auth,
+  preview,
+  defaultConsent,
+} = Astro.props;
+
+// Skip in development mode unless explicitly enabled
+const isDevelopment = import.meta.env.DEV;
+const shouldRender = !isDevelopment || enableInDevMode;
+
+// Validate GTM ID format
+if (shouldRender && !/^GTM-[A-Z0-9]{5,}$/i.test(gtmId)) {
+  console.warn(
+    `[astro-gtm] Invalid GTM ID format: "${gtmId}". Expected format: GTM-XXXXXXX (e.g., GTM-ABC123)`
+  );
+}
+---
+
+{shouldRender && (
+  <script define:vars={{ gtmId, dataLayerName, dataLayer, auth, preview, defaultConsent }} is:inline>
+    var w = window;
+    var d = document;
+
+    // Initialize data layer
+    w[dataLayerName] = w[dataLayerName] || [];
+
+    // Set consent defaults if provided (must be first)
+    if (defaultConsent) {
+      w[dataLayerName].push(['consent', 'default', defaultConsent]);
+    }
+
+    w[dataLayerName].push(dataLayer);
+    w[dataLayerName].push({
+      "gtm.start": new Date().getTime(),
+      event: "gtm.js",
+    });
+
+    // Build script URL
+    var dl = dataLayerName !== "dataLayer" ? "&l=" + dataLayerName : "";
+    var ath = auth ? `&gtm_auth=${auth}` : "";
+    var prv = preview ? `&gtm_preview=${preview}` : "";
+
+    var s = d.createElement("script");
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtm.js?id=${gtmId}${dl}${ath}${prv}`;
+
+    d.head.appendChild(s);
+  </script>
+)}
+
+{ shouldRender && includeNoScript && (
+    <noscript>
+      <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${gtmId}${auth ? `&gtm_auth=${auth}` : ''}${preview ? `&gtm_preview=${preview}` : ''}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      />
+    </noscript>
+  )
+}
+
+<!-- 
+<GoogleTagManager gtmId="GTM-XXXXXXX" /> 
+-->

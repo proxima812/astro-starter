@@ -1,0 +1,251 @@
+---
+import { Schema } from "astro-seo-schema";
+import {
+	config,
+	type SeoKeywords,
+	type SeoPageType,
+	type SiteVerification,
+} from "main.config";
+import type {
+	BlogPosting,
+	ImageObject,
+	Organization,
+	Person,
+	WebPage,
+	WithContext,
+} from "schema-dts";
+
+export interface Props {
+	datePublished?: string | Date;
+	dateModified?: string | Date;
+	indexRobots?: boolean;
+	name?: string;
+	author?: string;
+	title?: string;
+	type?: SeoPageType;
+	keywords?: SeoKeywords;
+	description?: string;
+	ogImage?: string;
+	locale?: string;
+	YM?: boolean;
+	canonicalURL?: string | URL;
+}
+
+const {
+	datePublished,
+	dateModified,
+	indexRobots,
+	name,
+	author,
+	title,
+	type,
+	keywords,
+	description,
+	ogImage,
+	locale,
+	YM,
+	canonicalURL,
+} = Astro.props;
+
+const siteURL = new URL(config.site.url);
+
+function formatCanonicalURL(url: string | URL) {
+	const path = url.toString();
+	const hasQueryParams = path.includes("?");
+
+	return hasQueryParams ? path.replace(/\/$/, "") : path.replace(/\/?$/, "/");
+}
+
+function toAbsoluteURL(value: string | URL, base: URL) {
+	return new URL(value.toString(), base).href;
+}
+
+function formatDateToISO(date?: string | Date) {
+	if (!date) return undefined;
+
+	const parsedDate = date instanceof Date ? date : new Date(date);
+
+	return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate.toISOString();
+}
+
+function normalizeKeywords(value?: SeoKeywords) {
+	if (!value) return "";
+	return Array.isArray(value) ? value.filter(Boolean).join(", ") : value.trim();
+}
+
+const resolvedCanonicalURL = canonicalURL
+	? new URL(canonicalURL.toString(), siteURL)
+	: new URL(Astro.url.pathname, siteURL);
+
+const socialImageURL = new URL(
+	ogImage ? ogImage : `/${config.site.OG.defaultImage.replace(/^\/+/, "")}`,
+	siteURL,
+).href;
+
+const siteName = name || config.site.OG.site_name || config.site.OG.title;
+
+const mainTitle =
+	title && config.site.OG.title && title !== config.site.OG.title
+		? `${title} ${config.site.OG.titleSeparator} ${config.site.OG.title}`
+		: title || config.site.OG.title;
+
+const mainDescription = description || config.site.OG.description;
+
+const mainAuthor = author || config.site.OG.author || siteName;
+const mainOGImage = socialImageURL || config.site.OG.defaultImage;
+const mainLocale = locale || config.site.OG.locale;
+const mainKeywords = normalizeKeywords(keywords) || normalizeKeywords(config.site.OG.keywords);
+const publishedTime = formatDateToISO(datePublished);
+const modifiedTime = formatDateToISO(dateModified) || publishedTime;
+const isArticle = type === "article";
+const schemaAuthor = {
+	"@type": "Person",
+	name: mainAuthor,
+	url: siteURL.href,
+} satisfies Person;
+const schemaLogo = config.site.OG.logo
+	? ({
+			"@type": "ImageObject",
+			url: toAbsoluteURL(config.site.OG.logo, siteURL),
+		} satisfies ImageObject)
+	: undefined;
+const schemaPublisher = {
+	"@type": "Organization",
+	name: config.site.OG.organizationName || siteName,
+	...(schemaLogo && { logo: schemaLogo }),
+} satisfies Organization;
+const schemaItem: WithContext<BlogPosting | WebPage> = isArticle
+	? {
+			"@context": "https://schema.org",
+			"@type": "BlogPosting",
+			headline: mainTitle,
+			description: mainDescription,
+			keywords: mainKeywords,
+			inLanguage: mainLocale,
+			url: formatCanonicalURL(resolvedCanonicalURL),
+			mainEntityOfPage: formatCanonicalURL(resolvedCanonicalURL),
+			image: [mainOGImage],
+			author: schemaAuthor,
+			publisher: schemaPublisher,
+			...(publishedTime && { datePublished: publishedTime }),
+			...(modifiedTime && { dateModified: modifiedTime }),
+		}
+	: {
+			"@context": "https://schema.org",
+			"@type": "WebPage",
+			name: mainTitle,
+			description: mainDescription,
+			inLanguage: mainLocale,
+			url: formatCanonicalURL(resolvedCanonicalURL),
+			image: [mainOGImage],
+			author: schemaAuthor,
+		};
+
+const enabledVerifications = config.site.verifications.filter(
+	(verification: SiteVerification) => verification.name_verification && verification.content,
+);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<meta name="generator" content={Astro.generator} />
+
+<link rel="canonical" href={formatCanonicalURL(resolvedCanonicalURL)} />
+
+<title>{mainTitle}</title>
+
+<meta name="title" content={mainTitle} />
+<meta name="description" content={mainDescription} />
+<meta name="author" content={mainAuthor} />
+
+<meta property="og:title" content={mainTitle} />
+<meta property="og:description" content={mainDescription} />
+
+<meta property="og:type" content={isArticle ? "article" : "website"} />
+
+<meta property="og:url" content={formatCanonicalURL(resolvedCanonicalURL)} />
+
+<meta property="og:image" content={mainOGImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={config.site.OG.imageAlt || mainTitle} />
+
+<meta property="og:locale" content={mainLocale} />
+
+<meta property="og:site_name" content={siteName} />
+
+{mainKeywords && <meta name="keywords" content={mainKeywords} />}
+
+{
+	isArticle && (
+		<>
+			<meta property="article:author" content={mainAuthor} />
+			{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+			{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+		</>
+	)
+}
+
+<meta name="twitter:title" content={mainTitle} />
+<meta name="twitter:description" content={mainDescription} />
+<meta name="twitter:image" content={mainOGImage} />
+<meta name="twitter:image:alt" content={config.site.OG.imageAlt || mainTitle} />
+<meta name="twitter:card" content={config.site.OG.twitterCard} />
+<meta name="twitter:url" content={formatCanonicalURL(resolvedCanonicalURL)} />
+{
+	config.site.OG.twitterSite && (
+		<meta name="twitter:site" content={config.site.OG.twitterSite} />
+	)
+}
+{
+	config.site.OG.twitterCreator && (
+		<meta name="twitter:creator" content={config.site.OG.twitterCreator} />
+	)
+}
+
+<meta
+	name="robots"
+	content={indexRobots === false
+		? "noindex, nofollow"
+		: "index, follow, max-image-preview:large"}
+/>
+
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<link rel="alternate" type="text/plain" href="/llms.txt" title="LLMS Index" />
+<link rel="alternate" type="text/plain" href="/ai.txt" title="AI usage policy" />
+<!-- <link rel="alternate" type="application/rss+xml" href="/rss.xml" title="RSS feed" /> -->
+
+{
+	enabledVerifications.map((verification) => (
+		<meta name={verification.name_verification} content={verification.content} />
+	))
+}
+
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
+<link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+
+<link rel="manifest" href="/site.webmanifest" />
+
+<meta name="application-name" content={siteName} />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content={siteName} />
+<meta name="mobile-web-app-capable" content="yes" />
+
+<meta name="msapplication-TileColor" content={config.site.theme.colors.tile} />
+<link rel="mask-icon" href="/favicon.svg" color={config.site.theme.colors.maskIcon} />
+<meta name="theme-color" content={config.site.theme.colors.theme} />
+
+<Schema item={schemaItem} />
+
+<!--
+  ┌────────────────────────────┐
+  │  proxima812               │
+  │  Kamil M.I.               │
+  └────────────────────────────┘
+-->

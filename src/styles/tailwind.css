@@ -1,0 +1,80 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "@toolwind/corner-shape";
+
+@theme {
+	--default-font-family:
+		ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+		"Segoe UI Symbol", "Noto Color Emoji";
+
+	--default-font-feature-settings: normal;
+	--default-font-variation-settings: normal;
+
+/* Основной брендовый цвет (кнопки, ссылки, ключевые акценты) */
+  --color-primary: oklch(0.17 0 0);
+
+  /* Цвет текста/иконок на primary */
+  --color-primary-foreground: oklch(0.98 0 0);
+
+  /* Вторичный цвет (менее важные кнопки/элементы) */
+  --color-secondary: oklch(0.9 0 0);
+
+  /* Текст на secondary */
+  --color-secondary-foreground: oklch(0.17 0 0);
+
+
+  /* Фон страницы/приложения */
+  --color-background: oklch(0.98 0 0);
+
+  /* Основной цвет текста */
+  --color-foreground: oklch(0.17 0 0);
+
+
+  /* Приглушённые поверхности (карточки, disabled, вторичный UI) */
+  --color-muted: oklch(0.92 0 0);
+
+  /* Текст на muted (менее контрастный) */
+  --color-muted-foreground: oklch(0.45 0 0);
+}
+
+@layer base {
+	html,
+	:host {
+		-webkit-text-size-adjust: 100%;
+		tab-size: 4;
+		line-height: 1.5;
+		font-family: var(
+			--default-font-family,
+			ui-sans-serif,
+			system-ui,
+			sans-serif,
+			"Apple Color Emoji",
+			"Segoe UI Emoji",
+			"Segoe UI Symbol",
+			"Noto Color Emoji"
+		);
+		font-feature-settings: var(--default-font-feature-settings, normal);
+		font-variation-settings: var(--default-font-variation-settings, normal);
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		box-sizing: border-box;
+		border: 0 solid;
+		margin: 0;
+		padding: 0;
+	}
+
+	html,
+	body {
+		@apply flex min-h-screen min-w-[320px] flex-col text-primary bg-primary-foreground font-sans antialiased md:subpixel-antialiased;
+	}
+}
+
+@utility no-container {
+	@apply relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw];
+}

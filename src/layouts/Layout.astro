@@ -1,0 +1,96 @@
+---
+import type { Props as ContainerProps } from "@/components/partials/Container.astro";
+import Container from "@/components/partials/Container.astro";
+import GoogleTagManager from "@/components/SEO/Analytics/GoogleTagManager.astro";
+import YandexMetrika from "@/components/SEO/Analytics/YandexMetrika.astro";
+import SEO from "@/components/SEO/SEO.astro";
+import "@/styles/tailwind.css";
+import { config, type SeoKeywords, type SeoPageType } from "main.config";
+
+interface Props {
+	title?: string;
+	description?: string;
+	datePublished?: string | Date;
+	bodyStyle?: string;
+	dateModified?: string | Date;
+	indexRobots?: boolean;
+	type?: SeoPageType;
+	keywords?: SeoKeywords;
+	ogImage?: string;
+	canonicalURL?: string | URL;
+	locale?: string;
+	name?: string;
+	author?: string;
+	YM?: boolean;
+	htmlLang?: string;
+	className?: string;
+	gap?: string;
+	py?: string;
+	containerOff?: boolean;
+	innerSetOff?: boolean;
+}
+
+const {
+	datePublished,
+	dateModified,
+	indexRobots,
+	title = config.site.OG.title,
+	type,
+	description = config.site.OG.description,
+	ogImage,
+	keywords,
+	canonicalURL,
+	locale,
+	name,
+	author,
+	htmlLang = config.site.language,
+	className,
+	containerOff,
+	innerSetOff,
+	gap,
+} = Astro.props;
+
+const seoProps = {
+	title,
+	description,
+	...(indexRobots !== undefined && { indexRobots }),
+	...(ogImage && { ogImage }),
+	...(type && { type }),
+	...(keywords && { keywords }),
+	...(datePublished && { datePublished }),
+	...(dateModified && { dateModified }),
+	...(canonicalURL && { canonicalURL }),
+	...(locale && { locale }),
+	...(name && { name }),
+	...(author && { author }),
+};
+
+const containerAttrs = {
+	...(className && { className }),
+	...(containerOff !== undefined && { containerOff }),
+	...(innerSetOff !== undefined && { innerSetOff }),
+	...(gap && { gap }),
+} satisfies ContainerProps;
+---
+
+<html lang={htmlLang} class="scroll-smooth subpixel-antialiased">
+	<head>
+		{
+			config.site.analytics.googleTagManager?.gtmId && (
+				<GoogleTagManager gtmId={config.site.analytics.googleTagManager.gtmId} />
+			)
+		}
+
+		{
+			config.site.analytics.yandexMetrika?.counterId && (
+				<YandexMetrika counterId={config.site.analytics.yandexMetrika.counterId} />
+			)
+		}
+		<SEO {...seoProps} />
+	</head>
+	<body>
+		<Container {...containerAttrs}>
+			<slot />
+		</Container>
+	</body>
+</html>

@@ -1,0 +1,31 @@
+---
+import { cn } from "@/utils/lib/cn";
+
+export interface Props {
+	class?: string;
+	className?: string;
+	containerOff?: boolean;
+	innerSetOff?: boolean;
+	gap?: string;
+}
+
+const {
+	class: className,
+	className: customClassName,
+	containerOff,
+	innerSetOff,
+	gap,
+} = Astro.props;
+
+const resolvedClassName = cn(className, customClassName);
+---
+
+<div
+	class={containerOff
+		? cn("no-container", resolvedClassName)
+		: cn("container flex-1 px-5 mx-auto max-w-6xl my-18", resolvedClassName)}
+>
+	<div class={innerSetOff ? null : cn("flex flex-col gap-12", gap)}>
+		<slot />
+	</div>
+</div>

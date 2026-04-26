@@ -1,0 +1,168 @@
+---
+export interface Props {
+	/** Yandex Metrika Counter ID */
+	counterId: number | string;
+
+	/** Technical parameter for SSR (Astro Hybrid/Server) @default false */
+	ssr?: boolean;
+
+	/** Enable Webvisor @default false */
+	webvisor?: boolean;
+
+	/** Enable Click Map @default true */
+	clickmap?: boolean;
+
+	/** Track external links @default true */
+	trackLinks?: boolean;
+
+	/**
+	 * Accurate bounce rate.
+	 * true (15s), false, or number (ms).
+	 * @default true
+	 */
+	accurateTrackBounce?: boolean | number;
+
+	/**
+	 * E-commerce data collection.
+	 * true (dataLayer), false, container name (string), or array.
+	 * @default false
+	 */
+	ecommerce?: boolean | string | any[];
+
+	/**
+	 * Counter type. 1 for Yandex Advertising Network (RSYA), 0 for standard.
+	 * @default 0
+	 */
+	type?: number;
+
+	/** Track hash changes in URL (#hash) @default false */
+	trackHash?: boolean;
+
+	/** Send page title @default true */
+	sendTitle?: boolean;
+
+	/** Record iframe content without counter @default false */
+	childIframe?: boolean;
+
+	/** List of trusted domains for iframe recording */
+	trustedDomains?: string[];
+
+	/** Visit parameters (Session params). Object or Array. */
+	params?: Record<string, any> | any[];
+
+	/** User parameters (User params). Object. */
+	userParams?: Record<string, any>;
+
+	/**
+	 * Any additional parameters (for future Yandex updates).
+	 * Note: 'defer' and 'triggerEvent' are controlled by the component.
+	 */
+	config?: Record<string, any>;
+
+	/**
+	 * Enable console debugging.
+	 * @default false
+	 */
+	debug?: boolean;
+}
+
+const {
+	counterId,
+	ssr = false,
+	webvisor = false,
+	clickmap = true,
+	trackLinks = true,
+	accurateTrackBounce = true,
+	ecommerce = false,
+	type = 0,
+	trackHash = false,
+	sendTitle = true,
+	childIframe = false,
+	trustedDomains,
+	params,
+	userParams,
+	config = {},
+	debug = false,
+} = Astro.props;
+
+// Constructing the config object.
+const initConfig = {
+	ssr,
+	webvisor,
+	clickmap,
+	trackLinks,
+	accurateTrackBounce,
+	ecommerce,
+	type,
+	trackHash,
+	sendTitle,
+	childIframe,
+	trustedDomains,
+	params,
+	userParams,
+	...config, // <-- Allows overriding or adding new params
+	defer: true, // Hardcoded: disable auto-hit on init
+};
+
+// Script URL generation
+const scriptSrc = `https://mc.yandex.ru/metrika/tag.js?id=${counterId}`;
+---
+
+<!-- Yandex.Metrika script -->
+<script is:inline define:vars={{ counterId, initConfig, scriptSrc, debug }}>
+	(function (m, e, t, r, i, k, a) {
+		m[i] =
+			m[i] ||
+			function () {
+				(m[i].a = m[i].a || []).push(arguments);
+			};
+		m[i].l = 1 * new Date();
+		for (var j = 0; j < document.scripts.length; j++) {
+			if (document.scripts[j].src === r) {
+				return;
+			}
+		}
+		((k = e.createElement(t)),
+			(a = e.getElementsByTagName(t)[0]),
+			(k.async = 1),
+			(k.src = r),
+			a.parentNode.insertBefore(k, a));
+	})(window, document, "script", scriptSrc, "ym");
+
+	// Save ID globally for helper functions
+	window._astro_ym_id = counterId;
+
+	// Initialize counter (hit is NOT sent here due to defer: true)
+	ym(counterId, "init", initConfig);
+
+	if (debug) console.log(`[astro-ym] Init ${counterId}`, initConfig);
+</script>
+
+<!-- Astro Navigation Logic -->
+<script define:vars={{ counterId, debug }}>
+	document.addEventListener("astro:page-load", () => {
+		// This fires on Initial Load AND on View Transitions navigation when the DOM is ready
+		if (typeof window.ym === "function") {
+			window.ym(counterId, "hit", window.location.href, {
+				title: document.title,
+				referer: document.referrer,
+			});
+
+			if (debug) console.log(`[astro-ym] Hit sent: ${window.location.href}`);
+		}
+	});
+</script>
+
+<noscript>
+	<div>
+		<img
+			src={`https://mc.yandex.ru/watch/${counterId}`}
+			style="position:absolute; left:-9999px;"
+			alt=""
+		/>
+	</div>
+</noscript>
+
+<!-- 
+<YandexMetrika counterId="" />
+ -->
