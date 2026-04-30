@@ -213,8 +213,8 @@ const enabledVerifications = config.site.verifications.filter(
 
 <link rel="sitemap" href="/sitemap-index.xml" />
 
-<link rel="alternate" type="text/plain" href="/llms.txt" title="LLMS Index" />
-<link rel="alternate" type="text/plain" href="/ai.txt" title="AI usage policy" />
+{config.features.llms && <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMS Index" />}
+{config.features.ai && <link rel="alternate" type="text/plain" href="/ai.txt" title="AI usage policy" />}
 <!-- <link rel="alternate" type="application/rss+xml" href="/rss.xml" title="RSS feed" /> -->
 
 {
@@ -230,7 +230,7 @@ const enabledVerifications = config.site.verifications.filter(
 <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 
-<link rel="manifest" href="/site.webmanifest" />
+{config.features.manifest && <link rel="manifest" href="/site.webmanifest" />}
 
 <meta name="application-name" content={siteName} />
 <meta name="apple-mobile-web-app-capable" content="yes" />

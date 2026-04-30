@@ -6,10 +6,12 @@ import icon from "astro-icon";
 import metaTags from "astro-meta-tags";
 import { defineConfig } from "astro/config";
 import { config } from "./main.config";
-import aiTxt from "./src/integrations/aiTxt";
-import indexNow from "./src/integrations/indexNow";
-import llmsTxt from "./src/integrations/llmsTxt";
 import robotsTxt from "./src/integrations/robotsTxt";
+// proxima:feature-imports
+
+const optionalIntegrations = [
+	// proxima:feature-integrations
+];
 
 export default defineConfig({
 	site: config.site.url,
@@ -32,15 +34,7 @@ export default defineConfig({
 		metaTags(),
 		react(),
 		robotsTxt(),
-		aiTxt(),
-		llmsTxt(),
-		indexNow({
-			key: config.indexNow.key,
-			// true - PROD, false - DEV
-			collection: [""],
-			enabled: false,
-			maxUrls: 10000,
-		}),
+		...optionalIntegrations,
 	],
 
 	output: "static",

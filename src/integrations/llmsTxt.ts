@@ -116,9 +116,9 @@ async function getPageEntries(site: URL): Promise<LlmsEntry[]> {
 
 			return {
 				title: meta.title ?? titleFromRoute(route),
-				description: meta.description,
 				section: getSectionFromRoute(route),
 				url: new URL(route, site).href,
+				...(meta.description ? { description: meta.description } : {}),
 			};
 		}),
 	);

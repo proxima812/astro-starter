@@ -136,7 +136,10 @@ CLAUDE.md
 
 # General agents
 .agent/
-.agents/
+.agents/*
+!.agents/README.md
+!.agents/rules.md
+!.agents/session-hints.md
 .ai/
 .aiignore
 .llmignore

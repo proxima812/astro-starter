@@ -1,0 +1,46 @@
+{
+	"type": "module",
+	"scripts": {
+		"predev": "bun scripts/generate-favicons.mjs",
+		"dev": "astro dev",
+		"generate:favicons": "bun scripts/generate-favicons.mjs",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro",
+		"check": "astro check",
+		"lighthouse": "bun run build && lhci autorun --config=.lighthouserc.json"
+	},
+	"dependencies": {
+		"@astrojs/mdx": "5.0.4",
+		"@astrojs/react": "5.0.4",
+		"@astrojs/rss": "4.0.18",
+		"@astrojs/sitemap": "3.7.2",
+		"@astrojs/tailwind": "6.0.2",
+		"@iconify-json/mdi": "^1.2.3",
+		"@paper-design/shaders-react": "^0.0.43",
+		"@tailwindcss/vite": "^4.2.4",
+		"@toolwind/corner-shape": "^0.0.8-3",
+		"@types/react": "^19.2.14",
+		"@types/react-dom": "^19.2.3",
+		"astro": "6.1.9",
+		"astro-icon": "^1.1.5",
+		"astro-meta-tags": "^0.3.2",
+		"astro-seo-schema": "^6.0.0",
+		"clsx": "^2.1.1",
+		"motion": "^12.38.0",
+		"react": "^19.2.5",
+		"react-dom": "^19.2.5",
+		"schema-dts": "^2.0.0",
+		"split-type": "^0.3.4",
+		"tailwind-merge": "^2.6.1",
+		"tailwindcss": "^4.2.4",
+		"typescript": "^5.9.3"
+	},
+	"devDependencies": {
+		"@astrojs/check": "^0.9.8",
+		"@iconify-json/ri": "^1.2.10",
+		"@iconify-json/tabler": "^1.2.33",
+		"@lhci/cli": "^0.15.1",
+		"@tailwindcss/typography": "^0.5.19"
+	}
+}

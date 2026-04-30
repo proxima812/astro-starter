@@ -1,7 +1,26 @@
 {
-	"name": "starter-astro-latest",
+	"name": "proxima-starter",
 	"type": "module",
 	"version": "0.0.1",
+	"bin": {
+		"proxima-starter": "./bin/proxima-starter.mjs",
+		"proxima": "./bin/proxima-starter.mjs"
+	},
+	"files": [
+		"bin",
+		"scaffold/package-template.json",
+		"astro.config.mjs",
+		"main.config.ts",
+		"tsconfig.json",
+		"public",
+		"scripts/generate-favicons.mjs",
+		"src",
+		".gitignore",
+		".vscode",
+		".lighthouserc.json",
+		"CHANGELOG.md",
+		"README.md"
+	],
 	"scripts": {
 		"predev": "bun scripts/generate-favicons.mjs",
 		"dev": "astro dev",
@@ -13,7 +32,18 @@
 		"validate:seo": "node scripts/validate-seo.mjs",
 		"check:seo": "bun run build && bun run validate:seo",
 		"lighthouse": "bun run build && lhci autorun --config=.lighthouserc.json",
-		"update:last-updated": "node scripts/update-last-updated.mjs"
+		"update:last-updated": "node scripts/update-last-updated.mjs",
+		"smoke:cli": "bun scripts/smoke-cli.mjs",
+		"pack:dry": "npm pack --dry-run",
+		"release:check": "bun run check && bun run smoke:cli && bun run pack:dry",
+		"release:dry": "bun scripts/release-dry.mjs",
+		"release": "semantic-release",
+		"version:patch": "npm version patch",
+		"version:minor": "npm version minor",
+		"version:major": "npm version major"
+	},
+	"publishConfig": {
+		"access": "public"
 	},
 	"dependencies": {
 		"@astrojs/mdx": "5.0.4",
@@ -25,7 +55,9 @@
 		"@paper-design/shaders-react": "^0.0.43",
 		"@semantic-release/changelog": "^6.0.3",
 		"@semantic-release/commit-analyzer": "^13.0.1",
+		"@semantic-release/git": "^10.0.1",
 		"@semantic-release/github": "^12.0.6",
+		"@semantic-release/npm": "^12.0.2",
 		"@semantic-release/release-notes-generator": "^14.1.0",
 		"@tailwindcss/vite": "^4.2.4",
 		"@toolwind/corner-shape": "^0.0.8-3",
@@ -47,7 +79,7 @@
 		"typescript": "^5.9.3"
 	},
 	"devDependencies": {
-		"@astrojs/check": "^0.9.8",
+		"@astrojs/check": "^0.9.9",
 		"@iconify-json/ri": "^1.2.10",
 		"@iconify-json/tabler": "^1.2.33",
 		"@lhci/cli": "^0.15.1",

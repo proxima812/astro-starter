@@ -11,6 +11,12 @@ const siteThemeColors = {
 } as const;
 
 export const config = {
+	features: {
+		manifest: false,
+		ai: false,
+		llms: false,
+		indexNow: false,
+	},
 	indexNow: {
 		// Генерация рандомного ключа
 		// https://www.bing.com/indexnow/getstarted
@@ -137,6 +143,12 @@ export interface SiteConfig {
 }
 
 export interface AppConfig {
+	features: {
+		manifest: boolean;
+		ai: boolean;
+		llms: boolean;
+		indexNow: boolean;
+	};
 	indexNow: {
 		key: string;
 	};
