@@ -9,195 +9,37 @@
 Готовый Astro starter для быстрых SEO-ориентированных сайтов, лендингов, корпоративных страниц и контентных проектов.
 Собран вокруг одной идеи: минимальный старт без мусора, но с сильной базой по индексации, метаданным, AI-ready файлам, favicon, manifest и валидации.
 
-## CLI режим
-
-Этот репозиторий теперь можно публиковать как пакет `proxima-starter`, чтобы поднимать новые проекты через `bunx`.
-
-Основной сценарий:
+## Быстрый старт
 
 ```bash
-bunx proxima-starter@latest init
+bun install
+bun run dev
 ```
 
-Что делает `init`:
-
-- создаёт в текущей папке пустой Astro проект через `bun create astro@latest . --template minimal --install --yes`, если Astro-проекта ещё нет
-- накатывает базовый Proxima starter поверх минимального шаблона
-- обновляет `tsconfig.json` до версии стартера, включая alias `@/* -> src/*`
-- мерджит зависимости и scripts из шаблона стартера в `package.json`
-- запускает `bun update`
-
-Что `init` намеренно не копирует:
-
-- `src/pages/site.webmanifest.ts`
-- `src/integrations/llmsTxt.ts`
-- `src/integrations/indexNow.ts`
-- `src/integrations/aiTxt.ts`
-- `.releaserc.json`
-- `skills-lock.json`
-- `scripts/validate-seo.mjs`
-- `.lighthouseci`
-- `.github`
-- `.agents`
-
-## Добавление фич
-
-Опциональные фичи подключаются отдельно:
+Production build:
 
 ```bash
-bunx proxima-starter@latest add llms ai indexNow manifest
+bun run build
 ```
 
-Поддерживаются фичи:
-
-- `llms`
-- `ai`
-- `indexNow`
-- `manifest`
-
-Команда `add`:
-
-- копирует нужные route/integration файлы
-- включает feature-флаги в `main.config.ts`
-- дописывает нужные integrations в `astro.config.mjs`
-- мерджит зависимости шаблона
-- запускает `bun update`
-
-Запись `add proxima llms ai` тоже поддерживается: слово `proxima` просто игнорируется как маркер.
-
-## Удаление фич
-
-Если optional feature больше не нужна:
+Проверки:
 
 ```bash
-bunx proxima-starter@latest remove llms ai
+bun run check
+bun run check:seo
+bun run lighthouse
 ```
 
-Команда `remove`:
+## Опциональные фичи
 
-- отключает feature-флаги в `main.config.ts`
-- удаляет feature-файлы из проекта
-- пересобирает managed-блоки в `astro.config.mjs`
-- запускает `bun update`
+В стартере уже есть заготовки для:
 
-## Статус фич
+- `llms.txt`
+- `ai.txt`
+- `IndexNow`
+- `site.webmanifest`
 
-Посмотреть, какие фичи сейчас включены в проекте:
-
-```bash
-bunx proxima-starter@latest status
-```
-
-Алиасы:
-
-- `bunx proxima-starter@latest list`
-- `bunx proxima-starter@latest status`
-
-## Обновление стартера
-
-Чтобы подтянуть изменения стартера в уже созданный проект:
-
-```bash
-bunx proxima-starter@latest update
-```
-
-Чтобы одновременно подтянуть обновления и докинуть новые фичи:
-
-```bash
-bunx proxima-starter@latest update llms ai
-```
-
-Что обновляет `update`:
-
-- `tsconfig.json` стартера с alias-ами
-- managed части `astro.config.mjs`
-- `scripts/generate-favicons.mjs`
-- `.gitignore`
-- `.vscode`
-- `.lighthouserc.json`
-- `src/components/SEO/*`
-- `src/integrations/robotsTxt.ts`
-- файлы уже включённых фич и фич, переданных в аргументах
-- зависимости через `bun update`
-
-Что `update` не должен затирать автоматически:
-
-- `src/pages/index.astro`
-- пользовательский контент и страницы
-- `main.config.ts` целиком
-- `public/*`, где обычно лежат брендовые ассеты
-
-В `main.config.ts` стартер поддерживает только feature-флаги и не пытается перезаписывать ваши SEO/brand значения целиком.
-
-`astro.config.mjs` в `update` больше не перекатывается целиком. Команда старается сохранить пользовательские правки и синхронизирует только proxima-managed часть:
-
-- import `config`
-- import `robotsTxt`
-- маркерный блок optional feature imports
-- `optionalIntegrations`
-- `robotsTxt()` и `...optionalIntegrations` внутри `integrations`
-
-## Поддержка пакета
-
-Технические инструкции по сопровождению CLI и стартера лежат в:
-
-- [`docs/proxima-starter.md`](./docs/proxima-starter.md)
-- [`AGENTS.md`](./AGENTS.md)
-- `.agents/README.md`
-- `.agents/rules.md`
-- `.agents/session-hints.md`
-
-Чтобы потом без боли добавлять новые фичи, логика feature-регистрации вынесена в [`bin/feature-registry.mjs`](./bin/feature-registry.mjs). Новая фича обычно требует:
-
-1. Добавить entry в `FEATURE_REGISTRY`
-2. Добавить исходные файлы фичи в репозиторий
-3. При необходимости описать `astroConfig.importLine` и `astroConfig.integrationLines`
-4. Если фича оставляет managed snippets в других файлах, описать `managedCleanup`
-4. Если нужны зависимости или scripts, обновить `scaffold/package-template.json`
-5. Обновить docs и прогнать smoke flow
-
-Есть готовая заготовка: [`bin/feature-template.example.mjs`](./bin/feature-template.example.mjs)
-
-## Publish Checklist
-
-Перед публикацией пакета:
-
-1. Прогнать `bun run check`
-2. Проверить `bun ./bin/proxima-starter.mjs --help`
-3. В чистой временной папке прогнать `init`
-4. В той же папке прогнать `add llms ai indexNow manifest`
-5. Проверить `remove` хотя бы для одной feature
-6. Прогнать `update`
-7. Проверить `bun run check` внутри сгенерированного проекта
-8. Убедиться, что `package.json` содержит корректные `name`, `version`, `bin`, `files`, `publishConfig`
-9. Убедиться, что `bin/proxima-starter.mjs` executable
-10. Опубликовать пакет
-
-Полезные команды репозитория:
-
-- `bun run smoke:cli` - полный smoke test `init -> add -> remove -> update -> check`
-- `bun run release:check` - локальная проверка перед публикацией
-- `bun run release:dry` - локальный dry-run release flow без npm/github publish шагов
-- `bun run release` - полноценный release flow
-- `bun run pack:dry` - проверить состав npm-пакета
-
-## Versioning Flow
-
-Рекомендуемый semver flow:
-
-- `patch`: фиксы CLI, docs, безопасные технические правки без изменения контракта
-- `minor`: новые optional features, новые managed updates, новые команды без ломающих изменений
-- `major`: изменение CLI contract, удаление feature, несовместимый `update` flow, изменение структуры стартера с миграционными последствиями
-
-Практический порядок:
-
-1. Поднять `version` в `package.json`
-2. Обновить changelog или release notes по вашему процессу
-3. Прогнать publish checklist
-4. Выполнить `npm publish` или `bun publish`
-5. Проверить `bunx proxima-starter@latest --help`
-
-Автогенерация changelog настроена через `semantic-release` и пишет в [`CHANGELOG.md`](./CHANGELOG.md).
+Они включаются напрямую через `config.features` в [`main.config.ts`](./main.config.ts), без отдельного CLI-пакета.
 
 ## Что это за стартер
 

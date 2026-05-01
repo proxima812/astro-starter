@@ -7,11 +7,9 @@ import metaTags from "astro-meta-tags";
 import { defineConfig } from "astro/config";
 import { config } from "./main.config";
 import robotsTxt from "./src/integrations/robotsTxt";
-// proxima:feature-imports
-
-const optionalIntegrations = [
-	// proxima:feature-integrations
-];
+import aiTxt from "./src/integrations/aiTxt";
+import indexNow from "./src/integrations/indexNow";
+import llmsTxt from "./src/integrations/llmsTxt";
 
 export default defineConfig({
 	site: config.site.url,
@@ -34,7 +32,9 @@ export default defineConfig({
 		metaTags(),
 		react(),
 		robotsTxt(),
-		...optionalIntegrations,
+		...(config.features.llms ? [llmsTxt()] : []),
+		...(config.features.ai ? [aiTxt()] : []),
+		...(config.features.indexNow ? [indexNow()] : []),
 	],
 
 	output: "static",
